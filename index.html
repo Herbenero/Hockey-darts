@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10263d">
+<title>Slapshot Showdown — Hockey Darts</title>
+<style>
+:root{--navy:#10263d;--navy2:#183b59;--blue:#245778;--ice:#eaf5fc;--red:#d94a4a;--gold:#f6c453;--green:#3c9a75;--ink:#13283a;--muted:#65798a;--line:#d8e4ec;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#dcecf7 0,#f5f9fc 360px,#eef3f7 100%);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}
+.app{max-width:1100px;margin:auto;padding:16px}
+header{background:var(--navy);color:white;border-radius:20px;padding:20px;position:relative;overflow:hidden;box-shadow:0 12px 30px #10263d20}
+header:after{content:"";position:absolute;width:240px;height:240px;border:22px solid #ffffff0d;border-radius:50%;right:-75px;top:-105px}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:54px;height:54px;border-radius:15px;background:var(--gold);color:var(--navy);display:grid;place-items:center;font-size:28px;flex-shrink:0}
+h1{margin:0;font-size:clamp(1.35rem,4vw,2.1rem);letter-spacing:.04em}header p{margin:5px 0 0;color:#c9dceb;font-size:.95rem}
+.header-row{display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative;z-index:1}.tag{border:1px solid #ffffff35;border-radius:99px;padding:7px 11px;font-size:.78rem;white-space:nowrap}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:17px;box-shadow:0 5px 18px #173b5910}
+.setup{margin-top:16px}.section-title{font-size:1.03rem;margin:0 0 13px;font-weight:800;display:flex;align-items:center;gap:8px}
+.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:.82rem;color:var(--muted);font-weight:700}
+input,select{width:100%;min-width:0;border:1px solid #c9d8e3;border-radius:10px;padding:11px 12px;background:#fff;color:var(--ink);outline:none}input:focus,select:focus{border-color:#357fac;box-shadow:0 0 0 3px #357fac22}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.btn{border:0;border-radius:10px;padding:11px 15px;font-weight:800;transition:transform .12s,filter .12s}.btn:active{transform:scale(.98)}.primary{background:var(--red);color:#fff}.secondary{background:var(--navy2);color:#fff}.light{background:#e8f1f7;color:var(--navy)}.danger{background:#fff0f0;color:#a72b2b;border:1px solid #f2caca}.btn:disabled{opacity:.4;cursor:not-allowed}
+.scoreboard{margin-top:16px;background:var(--navy);color:white;border-radius:18px;padding:16px;box-shadow:0 12px 25px #10263d20}
+.score-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.eyebrow{font-size:.74rem;letter-spacing:.12em;color:#b9d4e7;font-weight:800}.period-pill{background:#234967;border:1px solid #426782;padding:7px 12px;border-radius:99px;font-weight:800;font-size:.85rem}
+.score-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}.team-score{background:#1b3b56;border:1px solid #335771;border-radius:14px;padding:15px 12px;text-align:center;min-width:0}.team-score .name{font-size:.82rem;color:#c6deed;font-weight:800;overflow-wrap:anywhere}.goals{font-size:clamp(2.5rem,8vw,4.4rem);font-weight:900;line-height:1.12;margin:6px 0}.substat{font-size:.75rem;color:#b9d4e7}.center-score{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-width:64px}.vs{font-size:.72rem;letter-spacing:.1em;color:#9fbed3;font-weight:900}.clock{font-weight:900;font-size:1.12rem}.score-details{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.detail{background:#18344c;border-radius:10px;padding:9px;text-align:center}.detail strong{display:block;font-size:1.1rem}.detail span{font-size:.7rem;color:#bad1e1}
+.play-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:16px}.turn-panel{display:flex;flex-direction:column;gap:13px}.turn-banner{background:var(--ice);border:1px solid #c8e0ef;border-radius:12px;padding:13px}.turn-banner strong{display:block;font-size:1.1rem}.turn-banner small{color:var(--muted)}
+.dart-progress{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.dart-slot{border:2px dashed #c7d7e2;border-radius:11px;min-height:66px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#91a4b3;padding:7px;text-align:center}.dart-slot.filled{border-style:solid;border-color:#8db8d2;background:#f0f8fc;color:var(--navy)}.dart-slot b{font-size:.85rem}.dart-slot span{font-size:.72rem;margin-top:3px}
+.outcome-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.outcome-btn{min-height:78px;border:1px solid #d2e0e9;border-radius:12px;background:white;color:var(--ink);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;font-weight:850}.outcome-btn .symbol{font-size:1.4rem}.outcome-btn small{font-size:.69rem;font-weight:600;color:var(--muted)}.outcome-btn.goal{background:#e9f8f0;border-color:#a4d8bf}.outcome-btn.save{background:#edf6fc;border-color:#c3deef}.outcome-btn.miss{background:#fff2f2;border-color:#f0cccc}.outcome-btn:disabled{opacity:.38;cursor:not-allowed}
+.log-list{display:flex;flex-direction:column;gap:8px;max-height:350px;overflow:auto}.log-item{display:grid;grid-template-columns:32px 1fr auto;gap:9px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px}.log-num{width:30px;height:30px;border-radius:9px;background:#eaf3f9;display:grid;place-items:center;font-weight:900;font-size:.8rem}.log-item strong{display:block;font-size:.84rem}.log-item small{color:var(--muted);font-size:.73rem}.log-badge{font-size:.7rem;font-weight:900;padding:5px 7px;border-radius:99px;background:#e8f4ec;color:#28714d}.log-badge.no{background:#edf3f7;color:#516575}.empty{padding:22px 10px;text-align:center;color:var(--muted);font-size:.9rem}
+.status{padding:12px;border-radius:11px;background:#fff7e2;border:1px solid #f1dda3;color:#75520a;font-size:.87rem}
+.period-table{width:100%;border-collapse:collapse;font-size:.83rem}.period-table th,.period-table td{padding:10px 7px;border-bottom:1px solid var(--line);text-align:center}.period-table th{color:var(--muted);font-size:.74rem}.period-table td:first-child,.period-table th:first-child{text-align:left}
+.footer{text-align:center;padding:20px 5px;color:#6b8192;font-size:.77rem}
+.modal-backdrop{position:fixed;inset:0;background:#071522aa;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal-backdrop.show{display:flex}.modal{background:#fff;border-radius:18px;padding:22px;max-width:460px;width:100%;box-shadow:0 20px 70px #0004}.modal h2{margin-top:0}.modal p{color:var(--muted);line-height:1.5}
+.hidden{display:none!important}
+@media(max-width:760px){.app{padding:10px}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.play-grid{grid-template-columns:1fr}.header-row{align-items:flex-start}.tag{display:none}.panel{padding:14px}.scoreboard{padding:12px}.score-grid{gap:6px}.team-score{padding:13px 6px}.center-score{min-width:48px}.outcome-btn{min-height:72px}.score-details{gap:5px}.detail{padding:8px 3px}}
+@media(max-width:380px){.form-grid{grid-template-columns:1fr}.outcome-grid{gap:6px}.outcome-btn{font-size:.8rem}.dart-slot{min-height:58px}.goals{font-size:2.5rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="header-row">
+    <div class="brand"><div class="logo">🏒</div><div><h1>SLAPSHOT SHOWDOWN</h1><p>Hockey Darts · Shoot. Score. Celebrate.</p></div></div>
+    <div class="tag">STANDARD + QUAD BOARD</div>
+  </div>
+</header>
+
+<section class="panel setup">
+  <h2 class="section-title">⚙️ Game Setup</h2>
+  <div class="form-grid">
+    <div class="field"><label for="format">Game format</label><select id="format"><option value="singles">Singles · 1 vs 1</option><option value="doubles">Doubles · 2 vs 2</option></select></div>
+    <div class="field"><label for="board">Dartboard</label><select id="board"><option value="standard">Standard board</option><option value="quad">Quad board</option></select></div>
+    <div class="field"><label for="periods">Periods</label><select id="periods"><option value="3">3 periods (standard)</option><option value="1">1 period (quick game)</option></select></div>
+    <div class="field"><label for="overtime">Tied game</label><select id="overtime"><option value="sudden">Sudden-death overtime</option><option value="shootout">Shootout</option><option value="tie">Allow a tie</option></select></div>
+    <div class="field"><label for="homeName">Home team / player</label><input id="homeName" maxlength="24" value="Home Team"></div>
+    <div class="field"><label for="awayName">Away team / player</label><input id="awayName" maxlength="24" value="Away Team"></div>
+    <div class="field"><label for="homeP1">Home player 1</label><input id="homeP1" maxlength="24" value="Home Player 1"></div>
+    <div class="field"><label for="awayP1">Away player 1</label><input id="awayP1" maxlength="24" value="Away Player 1"></div>
+    <div class="field doubles-only hidden"><label for="homeP2">Home player 2</label><input id="homeP2" maxlength="24" value="Home Player 2"></div>
+    <div class="field doubles-only hidden"><label for="awayP2">Away player 2</label><input id="awayP2" maxlength="24" value="Away Player 2"></div>
+  </div>
+  <div class="actions">
+    <button class="btn primary" id="startBtn">🏒 Start New Game</button>
+    <button class="btn light" id="swapBtn">⇄ Swap First Throw</button>
+    <button class="btn light" id="rulesBtn">Rules</button>
+  </div>
+</section>
+
+<section class="scoreboard" aria-live="polite">
+  <div class="score-top"><div><div class="eyebrow">LIVE GAME</div><div style="font-size:1.2rem;font-weight:900;margin-top:3px" id="gameTitle">Home Team vs Away Team</div></div><div class="period-pill" id="periodLabel">PERIOD 1 · ROUND 1</div></div>
+  <div class="score-grid">
+    <div class="team-score"><div class="name" id="homeScoreName">HOME TEAM</div><div class="goals" id="homeGoals">0</div><div class="substat"><span id="homeShots">0</span> shots · <span id="homeSaves">0</span> saves faced</div></div>
+    <div class="center-score"><div class="vs">VS</div><div class="clock" id="statusClock">LIVE</div><div class="vs">HOCKEY</div></div>
+    <div class="team-score"><div class="name" id="awayScoreName">AWAY TEAM</div><div class="goals" id="awayGoals">0</div><div class="substat"><span id="awayShots">0</span> shots · <span id="awaySaves">0</span> saves faced</div></div>
+  </div>
+  <div class="score-details">
+    <div class="detail"><strong id="homePeriodGoals">0</strong><span>HOME THIS PERIOD</span></div>
+    <div class="detail"><strong id="roundCount">0 / 3</strong><span>DARTS THROWN THIS TURN</span></div>
+    <div class="detail"><strong id="awayPeriodGoals">0</strong><span>AWAY THIS PERIOD</span></div>
+  </div>
+</section>
+
+<div class="play-grid">
+  <section class="panel turn-panel">
+    <h2 class="section-title">🎯 Record a Dart</h2>
+    <div class="turn-banner"><small>CURRENT THROWING TEAM</small><strong id="turnTeam">Home Team</strong><small id="turnPlayer">Home Player 1 · Dart 1 of 3</small></div>
+    <div class="dart-progress" id="dartProgress">
+      <div class="dart-slot"><b>DART 1</b><span>Waiting</span></div><div class="dart-slot"><b>DART 2</b><span>Waiting</span></div><div class="dart-slot"><b>DART 3</b><span>Waiting</span></div>
+    </div>
+    <div class="status" id="statusMessage">Choose the result of the dart thrown. Every dart can score at most one goal.</div>
+    <div class="outcome-grid" id="outcomeGrid">
+      <button class="outcome-btn save" data-outcome="single"><span class="symbol">🏒</span>Single<small>Save · no goal</small></button>
+      <button class="outcome-btn goal" data-outcome="double"><span class="symbol">🥅</span>Double<small>Goal · +1</small></button>
+      <button class="outcome-btn goal" data-outcome="triple"><span class="symbol">🚀</span>Triple<small>Goal · +1</small></button>
+      <button class="outcome-btn goal quad-only hidden" data-outcome="quad"><span class="symbol">⚡</span>Quad<small>One-timer · +1</small></button>
+      <button class="outcome-btn save" data-outcome="outerbull"><span class="symbol">🧤</span>Outer Bull<small>Goalie save</small></button>
+      <button class="outcome-btn goal" data-outcome="innerbull"><span class="symbol">🔥</span>Inner Bull<small>Goal · +1</small></button>
+      <button class="outcome-btn miss" data-outcome="miss"><span class="symbol">❌</span>Miss<small>No goal</small></button>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="undoBtn" disabled>↶ Undo Last Dart</button>
+      <button class="btn light" id="nextTurnBtn" disabled>Next Turn →</button>
+      <button class="btn light" id="nextPeriodBtn" disabled>Next Period →</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">📋 Game Log</h2>
+    <div class="log-list" id="gameLog"><div class="empty">Your dart-by-dart game log will appear here.</div></div>
+    <div class="actions"><button class="btn light" id="summaryBtn">Period Summary</button><button class="btn danger" id="resetBtn">Reset Game</button></div>
+    <div id="summaryArea" class="hidden" style="margin-top:15px">
+      <h3 style="font-size:.95rem">Period-by-period goals</h3>
+      <table class="period-table"><thead><tr><th>Period</th><th id="sumHomeHead">Home</th><th id="sumAwayHead">Away</th></tr></thead><tbody id="periodRows"></tbody></table>
+    </div>
+  </section>
+</div>
+<div class="footer">Slapshot Showdown · Hockey Darts · Track goals, not dart-point totals.</div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal"><h2 id="modalTitle">Game complete</h2><p id="modalText"></p><div class="actions"><button class="btn primary" id="modalNewBtn">New Game</button><button class="btn light" id="modalCloseBtn">Close</button></div></div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const outcomeInfo = {
+    single:{label:"Single",result:"Save",goal:false,shot:true},
+    double:{label:"Double",result:"GOAL",goal:true,shot:true},
+    triple:{label:"Triple",result:"GOAL",goal:true,shot:true},
+    quad:{label:"Quad",result:"ONE-TIMER GOAL",goal:true,shot:true},
+    outerbull:{label:"Outer Bull",result:"Goalie Save",goal:false,shot:true},
+    innerbull:{label:"Inner Bull",result:"GOAL",goal:true,shot:true},
+    miss:{label:"Miss",result:"Missed Shot",goal:false,shot:false}
+  };
+  let state;
+  let firstTeam = 0;
+
+  function getSetup(){
+    const doubles = $("format").value === "doubles";
+    const periods = Number($("periods").value);
+    const team = (nameId, p1Id, p2Id) => ({
+      name: $(nameId).value.trim() || (nameId==="homeName"?"Home Team":"Away Team"),
+      players: [$(p1Id).value.trim() || "Player 1", ...(doubles ? [$(p2Id).value.trim() || "Player 2"] : [])],
+      goals:0, shots:0, savesFaced:0, periodGoals:Array(periods).fill(0), playerGoals:{}
+    });
+    return {doubles,board:$("board").value,periods,overtime:$("overtime").value,teams:[team("homeName","homeP1","homeP2"),team("awayName","awayP1","awayP2")]};
+  }
+  function newGame(){
+    const setup=getSetup();
+    state={...setup,period:1,round:1,turnTeam:firstTeam,darts:[],log:[],finished:false,shootout:false,shootoutAttempts:[0,0],shootoutGoals:[0,0],suddenRound:0,initialTurns:setup.periods*3,periodStartedAtLog:0};
+    $("summaryArea").classList.add("hidden");
+    $("statusMessage").textContent="Game started. Choose the result of the dart thrown.";
+    render();
+  }
+  function currentPlayerIndex(teamIndex){
+    if(!state.doubles) return 0;
+    // Partners alternate darts within each team's turn.
+    return state.darts.length % 2;
+  }
+  function currentPlayer(teamIndex){
+    return state.teams[teamIndex].players[currentPlayerIndex(teamIndex)];
+  }
+  function record(outcome){
+    if(!state || state.finished || state.darts.length>=3) return;
+    if(outcome==="quad" && state.board!=="quad") return;
+    const info=outcomeInfo[outcome]; if(!info) return;
+    const teamIndex=state.turnTeam, team=state.teams[teamIndex], player=currentPlayer(teamIndex);
+    const event={outcome,label:info.label,result:info.result,goal:info.goal,teamIndex,teamName:team.name,player,period:state.period,round:state.round,dart:state.darts.length+1};
+    if(info.shot) team.shots++;
+    if(!info.goal && info.shot) team.savesFaced++;
+    if(info.goal){
+      team.goals++; team.periodGoals[state.period-1]=(team.periodGoals[state.period-1]||0)+1;
+      team.playerGoals[player]=(team.playerGoals[player]||0)+1;
+    }
+    state.darts.push(event); state.log.unshift(event);
+    $("statusMessage").textContent=info.goal ? `🥅 GOAL! ${player} scores for ${team.name}!` : info.shot ? `🧤 ${info.result}. No goal this dart.` : "❌ Missed shot. No goal.";
+    if(state.darts.length===3){
+      $("statusMessage").textContent += " Turn complete — choose Next Turn.";
+      $("nextTurnBtn").disabled=false;
+    }
+    $("undoBtn").disabled=false;
+    render();
+  }
+  function nextTurn(){
+    if(!state || state.finished || state.darts.length!==3) return;
+    state.darts=[];
+    const nextTeam=1-state.turnTeam;
+    // A round is complete only after both teams have taken their three-dart turn.
+    const roundCompleted=(nextTeam===firstTeam);
+    state.turnTeam=nextTeam;
+    if(roundCompleted){
+      state.round++;
+      if(state.round>3){
+        state.round=1;
+        if(state.period<state.periods){
+          $("nextPeriodBtn").disabled=false;
+          $("nextTurnBtn").disabled=true;
+          $("statusMessage").textContent="Period complete. Review the score, then start the next period.";
+          render(); return;
+        }
+        endRegulation(); return;
+      }
+    }
+    $("statusMessage").textContent="New turn. Throw three darts.";
+    render();
+  }
+  function nextPeriod(){
+    if(!state || state.finished || state.period>=state.periods) return;
+    state.period++; state.round=1; state.darts=[]; firstTeam=1-firstTeam; state.turnTeam=firstTeam;
+    $("nextPeriodBtn").disabled=true; $("nextTurnBtn").disabled=true;
+    $("statusMessage").textContent=`Period ${state.period} begins.`;
+    render();
+  }
+  function endRegulation(){
+    const [a,b]=state.teams;
+    if(a.goals!==b.goals){
+      finish(`${a.goals>b.goals?a.name:b.name} wins!`,`${a.name} ${a.goals} — ${b.goals} ${b.name}.`);
+      return;
+    }
+    if(state.overtime==="tie"){
+      finish("Game tied!",`${a.name} ${a.goals} — ${b.goals} ${b.name}.`);
+      return;
+    }
+    state.suddenRound=1; state.round=1; state.darts=[]; state.turnTeam=firstTeam;
+    state.overtimeActive=true;
+    if(state.overtime==="shootout"){
+      state.shootout=true; state.shootoutAttempts=[0,0]; state.shootoutGoals=[0,0];
+      $("statusMessage").textContent="Regulation is tied. Shootout begins: each side gets three one-dart attempts.";
+    }else{
+      state.period=state.periods+1;
+      state.periods=state.periods+1;
+      state.teams.forEach(t=>t.periodGoals.push(0));
+      $("statusMessage").textContent="Regulation is tied. Sudden-death overtime begins: each side gets one three-dart turn per round.";
+    }
+    render();
+  }
+  function recordShootout(outcome){
+    if(!state || state.finished || !state.shootout) return;
+    const i=state.turnTeam, info=outcomeInfo[outcome];
+    if(!info || (outcome==="quad" && state.board!=="quad")) return;
+    const attempt=state.shootoutAttempts[i]+1;
+    const player=state.teams[i].players[(attempt-1)%state.teams[i].players.length];
+    const goal=info.goal;
+    state.shootoutAttempts[i]++;
+    if(goal) state.shootoutGoals[i]++;
+    const event={outcome,label:info.label,result:goal?"SHOOTOUT GOAL":info.result,goal,teamIndex:i,teamName:state.teams[i].name,player,period:"SO",round:Math.ceil(attempt/3),dart:attempt};
+    state.log.unshift(event);
+    if(state.shootoutAttempts[0]===state.shootoutAttempts[1] && state.shootoutAttempts[0]>=3){
+      if(state.shootoutGoals[0]!==state.shootoutGoals[1]){
+        finish(`${state.teams[state.shootoutGoals[0]>state.shootoutGoals[1]?0:1].name} wins the shootout!`,`${state.teams[0].name}: ${state.shootoutGoals[0]} · ${state.teams[1].name}: ${state.shootoutGoals[1]}`);
+      }else{
+        state.shootoutAttempts=[0,0];state.shootoutGoals=[0,0];
+        $("statusMessage").textContent="Shootout tied. Sudden-death attempts begin.";
+      }
+    }else{
+      state.turnTeam=1-i;
+      $("statusMessage").textContent=goal?`${player} scores in the shootout!`:`${info.result}. Next shootout attempt.`;
+    }
+    render();
+  }
+  function finish(title,message){
+    state.finished=true;
+    $("statusClock").textContent="FINAL";
+    $("modalTitle").textContent=title;
+    $("modalText").textContent=message;
+    $("modalBackdrop").classList.add("show");
+    $("statusMessage").textContent=title+" "+message;
+    render();
+  }
+  function undo(){
+    if(!state || state.finished) return;
+    if(state.shootout){
+      const e=state.log.shift(); if(!e)return;
+      state.shootoutAttempts[e.teamIndex]=Math.max(0,state.shootoutAttempts[e.teamIndex]-1);
+      if(e.goal) state.shootoutGoals[e.teamIndex]=Math.max(0,state.shootoutGoals[e.teamIndex]-1);
+      state.turnTeam=e.teamIndex;
+      $("statusMessage").textContent="Last shootout dart undone.";
+      render(); return;
+    }
+    const e=state.darts.pop(); if(!e)return;
+    state.log.shift();
+    const team=state.teams[e.teamIndex];
+    if(outcomeInfo[e.outcome].shot) team.shots--;
+    if(!e.goal && outcomeInfo[e.outcome].shot) team.savesFaced--;
+    if(e.goal){
+      team.goals--;team.periodGoals[e.period-1]--;
+      team.playerGoals[e.player]--;
+      if(team.playerGoals[e.player]===0) delete team.playerGoals[e.player];
+    }
+    $("nextTurnBtn").disabled=true;$("nextPeriodBtn").disabled=true;
+    $("statusMessage").textContent="Last dart undone. Record the corrected result.";
+    render();
+  }
+  function render(){
+    if(!state)return;
+    const [h,a]=state.teams;
+    $("gameTitle").textContent=`${h.name} vs ${a.name}`;
+    $("homeScoreName").textContent=h.name.toUpperCase();$("awayScoreName").textContent=a.name.toUpperCase();
+    $("homeGoals").textContent=h.goals;$("awayGoals").textContent=a.goals;
+    $("homeShots").textContent=h.shots;$("awayShots").textContent=a.shots;
+    $("homeSaves").textContent=h.savesFaced;$("awaySaves").textContent=a.savesFaced;
+    $("homePeriodGoals").textContent=h.periodGoals[state.period-1]||0;
+    $("awayPeriodGoals").textContent=a.periodGoals[state.period-1]||0;
+    $("roundCount").textContent=`${state.darts.length} / 3`;
+    $("periodLabel").textContent=state.shootout?"SHOOTOUT":`PERIOD ${state.period} · ROUND ${Math.min(state.round,3)}`;
+    $("statusClock").textContent=state.finished?"FINAL":state.shootout?`${state.shootoutGoals[0]}–${state.shootoutGoals[1]}`:"LIVE";
+    $("turnTeam").textContent=state.teams[state.turnTeam].name;
+    $("turnPlayer").textContent=state.finished?"Game complete":state.shootout?`Attempt ${state.shootoutAttempts[state.turnTeam]+1} · ${currentPlayer(state.turnTeam)}`:`${currentPlayer(state.turnTeam)} · Dart ${state.darts.length+1} of 3`;
+    $("dartProgress").innerHTML=Array.from({length:3},(_,i)=>{
+      const e=state.darts[i];
+      return `<div class="dart-slot ${e?'filled':''}"><b>DART ${i+1}</b><span>${e?escapeHtml(e.label)+" · "+(e.goal?"GOAL":escapeHtml(e.result)):"Waiting"}</span></div>`;
+    }).join("");
+    document.querySelectorAll(".outcome-btn").forEach(btn=>{
+      const unavailable=state.finished || (btn.dataset.outcome==="quad"&&state.board!=="quad") || (!state.shootout&&state.darts.length>=3);
+      btn.disabled=unavailable;
+      btn.classList.toggle("hidden",btn.dataset.outcome==="quad"&&state.board!=="quad");
+    });
+    $("undoBtn").disabled=state.finished || (state.shootout ? state.log.length===0 : state.darts.length===0);
+    $("nextTurnBtn").disabled=state.finished || state.shootout || state.darts.length!==3;
+    $("nextPeriodBtn").disabled=state.finished || state.shootout || state.period>=state.periods || state.round!==1 || state.darts.length!==0;
+    $("gameLog").innerHTML=state.log.length?state.log.slice(0,100).map((e,i)=>`<div class="log-item"><div class="log-num">${state.log.length-i}</div><div><strong>${escapeHtml(e.teamName)} · ${escapeHtml(e.player)}</strong><small>${e.period==="SO"?"Shootout":`P${e.period} · Round ${e.round}`} · Dart ${e.dart} · ${escapeHtml(e.label)}</small></div><span class="log-badge ${e.goal?"":"no"}">${e.goal?"GOAL":escapeHtml(e.result)}</span></div>`).join(""):'<div class="empty">Your dart-by-dart game log will appear here.</div>';
+    $("summaryBtn").disabled=false;
+    $("sumHomeHead").textContent=h.name;$("sumAwayHead").textContent=a.name;
+    $("periodRows").innerHTML=Array.from({length:state.periods},(_,i)=>`<tr><td>${i+1>3?"OT":`Period ${i+1}`}</td><td>${h.periodGoals[i]||0}</td><td>${a.periodGoals[i]||0}</td></tr>`).join("");
+    $("startBtn").textContent=state.finished?"🏒 Start New Game":"🏒 Restart Game";
+  }
+  function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function showRules(){
+    $("modalTitle").textContent="Hockey Darts Rules";
+    $("modalText").textContent="Each team throws three darts per turn. Singles, triples, doubles, Quad (Quad board only), inner bull, and outer bull are entered using the buttons. A double, triple, Quad, or inner bull scores one goal; a single and outer bull are saves; a miss scores nothing. A game has three periods of three rounds each. In doubles, partners alternate darts. If tied, choose sudden-death overtime, a shootout, or allow a tie.";
+    $("modalBackdrop").classList.add("show");
+  }
+  $("format").addEventListener("change",()=>{
+    document.querySelectorAll(".doubles-only").forEach(el=>el.classList.toggle("hidden",$("format").value!=="doubles"));
+  });
+  $("board").addEventListener("change",()=>{
+    document.querySelectorAll(".quad-only").forEach(el=>el.classList.toggle("hidden",$("board").value!=="quad"));
+    if(state){state.board=$("board").value;render();}
+  });
+  $("startBtn").addEventListener("click",newGame);
+  $("swapBtn").addEventListener("click",()=>{firstTeam=1-firstTeam;if(state&&!state.finished){state.turnTeam=firstTeam;render();}else $("statusMessage").textContent=`${$("homeName").value} / ${$("awayName").value}: first throw swapped for next game.`;});
+  $("outcomeGrid").addEventListener("click",e=>{const b=e.target.closest("[data-outcome]");if(!b||b.disabled)return;if(state.shootout)recordShootout(b.dataset.outcome);else record(b.dataset.outcome);});
+  $("undoBtn").addEventListener("click",undo);
+  $("nextTurnBtn").addEventListener("click",nextTurn);
+  $("nextPeriodBtn").addEventListener("click",nextPeriod);
+  $("resetBtn").addEventListener("click",()=>{if(confirm("Reset the current game and clear its score log?"))newGame();});
+  $("summaryBtn").addEventListener("click",()=>$("summaryArea").classList.toggle("hidden"));
+  $("rulesBtn").addEventListener("click",showRules);
+  $("modalNewBtn").addEventListener("click",()=>{$("modalBackdrop").classList.remove("show");newGame();});
+  $("modalCloseBtn").addEventListener("click",()=>$("modalBackdrop").classList.remove("show"));
+  $("modalBackdrop").addEventListener("click",e=>{if(e.target===$("modalBackdrop"))$("modalBackdrop").classList.remove("show");});
+  // Start with a ready-to-play default game.
+  newGame();
+})();
+</script>
+</body>
+</html>
